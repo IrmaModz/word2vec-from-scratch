@@ -1,5 +1,5 @@
 '''
-python CS585_P02A_A20597307.py 20 CORPUS_FILE.txt
+python CS585_P02A_A20597307.py 2 CORPUS_FILE.txt
 Irma Modgvrishvili
 A20597307
 '''
@@ -94,8 +94,10 @@ def build_training_pairs(tokens, word_to_index):
 def init_weights(vocab_size, D):
     # input (target) embedding matrix: vocab_size x D
     # output (context) matrix: as explained in class
-    W_in = None
-    W_out = None
+    rng = np.random.default_rng(42)
+    W_in = rng.uniform(-0.5, 0.5, size=(vocab_size, D)) / D
+    W_out = rng.uniform(-0.5, 0.5, size=(vocab_size, D)) / D
+
     return W_in, W_out
 
 # train
@@ -130,7 +132,9 @@ def main():
     pairs = build_training_pairs(tokens, word_to_index)
     print(pairs)
 
-    #W_in, W_out = init_weights(len(V), D)
+    W_in, W_out = init_weights(len(V), D)
+    print("-----------")
+    print(W_in, W_out)
     #W_in, W_out = train(pairs, W_in, W_out, len(V))
     #save_embedding(V, W_in, OUTPUT_FILE)
 
