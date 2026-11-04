@@ -1,11 +1,12 @@
 '''
-python CS585_P02A_A20597307.py 20 CORPUS_FILE
+python CS585_P02A_A20597307.py 20 CORPUS_FILE.txt
 Irma Modgvrishvili
 A20597307
 '''
 import sys
 import os
 import numpy as np
+import re
 
 DEFAULT_D = 50
 
@@ -45,7 +46,10 @@ def clean_file(file_name):
     # read the file (encoding that handles non-Latin characters)
     # replace (not just delete) non-Latin-letter characters so words stay separated
     # lowercase entire contents
-    text = None
+    with open(file_name, "r", encoding="utf-8", errors="ignore") as f:
+        text = f.read()
+    text = re.sub(r"[^a-zA-Z]", " ", text)
+    text=text.lower()
     return text
 
 # create tokens + vocabulary
@@ -100,11 +104,12 @@ def save_embedding(V, embeddings, file_name):
 def main():
     D, corpus_path = check_input_params()
     text = clean_file(corpus_path)
-    tokens, V, word_to_index = create_vocabulary(text)
-    pairs = build_training_pairs(tokens, word_to_index)
-    W_in, W_out = init_weights(len(V), D)
-    W_in, W_out = train(pairs, W_in, W_out, len(V))
-    save_embedding(V, W_in, OUTPUT_FILE)
+    print(text)
+    #tokens, V, word_to_index = create_vocabulary(text)
+    #pairs = build_training_pairs(tokens, word_to_index)
+    #W_in, W_out = init_weights(len(V), D)
+    #W_in, W_out = train(pairs, W_in, W_out, len(V))
+    #save_embedding(V, W_in, OUTPUT_FILE)
 
     return
 
