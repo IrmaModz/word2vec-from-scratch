@@ -8,7 +8,11 @@ import os
 import numpy as np
 import re
 
+# Hyperparameters
+OUTPUT_FILE = "CS585_P02A_A20597307_EMBED.TXT"
+WINDOW_SIZE = 2
 DEFAULT_D = 50
+
 
 # check input parameters
 def check_input_params():   
@@ -38,8 +42,6 @@ def check_input_params():
          
     return D, corpus_path
 
-# Hyperparameters
-OUTPUT_FILE = "CS585_P02A_A20597307_EMBED.TXT"
 
 # clean file
 def clean_file(file_name):
@@ -71,7 +73,21 @@ def build_training_pairs(tokens, word_to_index):
     # Find nearby words using WINDOW_SIZE
     # Create a pair for each target and nearby word
     # Store the word indices
-    pairs = None
+    pairs = []
+    n = len(tokens)
+
+    for i in range(n):
+        target = word_to_index[tokens[i]]
+
+        for offset in range(-WINDOW_SIZE, WINDOW_SIZE + 1):
+            if offset == 0:
+                continue
+            j = i + offset
+            if j < 0 or j >= n:
+                continue
+            context = word_to_index[tokens[j]]
+            pairs.append((target, context))
+
     return pairs
 
 # initialize weights
@@ -105,10 +121,15 @@ def main():
     D, corpus_path = check_input_params()
     text = clean_file(corpus_path)
     print(text)
+    print("-----------")
+
     tokens, V, word_to_index = create_vocabulary(text)
     print(tokens, V, word_to_index)
+    print("-----------")
 
-    #pairs = build_training_pairs(tokens, word_to_index)
+    pairs = build_training_pairs(tokens, word_to_index)
+    print(pairs)
+
     #W_in, W_out = init_weights(len(V), D)
     #W_in, W_out = train(pairs, W_in, W_out, len(V))
     #save_embedding(V, W_in, OUTPUT_FILE)
