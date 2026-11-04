@@ -162,6 +162,13 @@ def train(pairs, W_in, W_out, neg_probs):
 def save_embedding(V, embeddings, file_name):
     # one line per word, in V's (alphabetical) order
     # format: word, v1, v2, ..., vD   (space after each comma)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_path = os.path.join(script_dir, file_name)
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        for i, word in enumerate(V):
+            values = ", ".join(f"{x:.6f}" for x in embeddings[i])
+            f.write(f"{word}, {values}\n")
     return
 
 def main():
@@ -172,11 +179,9 @@ def main():
     neg_probs = build_neg_probs(tokens, word_to_index)
     W_in, W_out = init_weights(len(V), D)
     W_in, W_out = train(pairs, W_in, W_out, neg_probs)
-    #save_embedding(V, W_in, OUTPUT_FILE)
+    save_embedding(V, W_in, OUTPUT_FILE)
 
     return
 
-
 if __name__ == "__main__":
     main()
-    
