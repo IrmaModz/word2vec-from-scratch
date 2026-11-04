@@ -58,10 +58,10 @@ def create_vocabulary(text):
     # Create a list of unique words
     # Sort the unique words alphabetically
     # Give each word a number (index)
-    # Keep the original word order for training   
-    tokens = None
-    V = None
-    word_to_index = None
+    # Keep the original word order for training 
+    tokens = text.split()
+    V = sorted(set(tokens))
+    word_to_index = {word: i for i, word in enumerate(V)}
     return tokens, V, word_to_index
 
 # build training data
@@ -105,7 +105,9 @@ def main():
     D, corpus_path = check_input_params()
     text = clean_file(corpus_path)
     print(text)
-    #tokens, V, word_to_index = create_vocabulary(text)
+    tokens, V, word_to_index = create_vocabulary(text)
+    print(tokens, V, word_to_index)
+
     #pairs = build_training_pairs(tokens, word_to_index)
     #W_in, W_out = init_weights(len(V), D)
     #W_in, W_out = train(pairs, W_in, W_out, len(V))
