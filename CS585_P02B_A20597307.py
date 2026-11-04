@@ -88,14 +88,43 @@ def reduce_to_3d(vectors):
     pca.fit(vectors)
     return pca
 
+def plot_3d(word, neighbors, points):
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection="3d")
+
+    labels = [word] + neighbors
+    for i, (label, (x, y, z)) in enumerate(zip(labels, points)):
+        color = "red" if i == 0 else "steelblue"
+        ax.plot([0, x], [0, y], [0, z], color=color, alpha=0.4)
+        ax.scatter(x, y, z, color=color, s=80 if i == 0 else 40)
+        ax.text(x, y, z, f"  {label}", color=color, fontsize=11 if i == 0 else 9)
+
+    ax.scatter(0, 0, 0, color="black", s=10)
+    ax.set_xlabel("PC1")
+    ax.set_ylabel("PC2")
+    ax.set_zlabel("PC3")
+    ax.set_title(f"'{word}' and its {len(neighbors)} nearest neighbors (PCA, 3D)")
+    plt.tight_layout()
+    plt.show()
+
 
 def main():
     word, K, V, vectors = check_input_params()
-    idx, nearest, similarities = find_nearest(word, K, V, vectors)
-    pca=reduce_to_3d(vectors)
-    print(pca)
 
+    print("Modzgvrishvili, Irma, A20597307 solution:")
+    print(f"Word: {word}")
+    print(f"Number of neighbors: {K}")
+    print("Dimensionality reduction method: PCA")
 
+    idx, nearest, sims = find_nearest(word, K, V, vectors)
+
+    pca = reduce_to_3d(vectors)
+    selected = np.vstack([vectors[idx], vectors[nearest]])
+    points = pca.transform(selected)
+    if points.shape[1] < 3:
+        points = np.hstack([points, np.zeros((points.shape[0], 3 - points.shape[1]))])
+
+    plot_3d(word, [V[n] for n in nearest], points)
 
 
 if __name__ == "__main__":

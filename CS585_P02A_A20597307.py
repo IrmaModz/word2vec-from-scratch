@@ -7,6 +7,7 @@ import sys
 import os
 import numpy as np
 import re
+import time
 
 # Hyperparameters
 OUTPUT_FILE = "CS585_P02A_A20597307_EMBED.TXT"
@@ -155,7 +156,6 @@ def train(pairs, W_in, W_out, neg_probs):
             np.add.at(W_out, neg_idx, -LEARNING_RATE * grad_c_negs)
             W_in[t_idx] -= LEARNING_RATE * grad_t
 
-        print(f"Epoch {epoch + 1}/{EPOCHS}  loss: {total_loss / max(len(pairs), 1):.4f}")
     return W_in, W_out
 
 # save results
@@ -173,15 +173,26 @@ def save_embedding(V, embeddings, file_name):
 
 def main():
     D, corpus_path = check_input_params()
+
+    print("Modzgvrishvili, Irma, A20597307 solution:")
+    print(f"Number of dimensions: {D}")
+    print(f"Training file name: {os.path.basename(corpus_path)}")
+    print(f"Embedding file name: {OUTPUT_FILE}")
+
     text = clean_file(corpus_path)
     tokens, V, word_to_index = create_vocabulary(text)
     pairs = build_training_pairs(tokens, word_to_index)
     neg_probs = build_neg_probs(tokens, word_to_index)
+
+    start = time.perf_counter()
     W_in, W_out = init_weights(len(V), D)
     W_in, W_out = train(pairs, W_in, W_out, neg_probs)
+    training_time = time.perf_counter() - start
+
     save_embedding(V, W_in, OUTPUT_FILE)
 
-    return
+    print()
+    print(f"Training time: {training_time:.2f} seconds")
 
 if __name__ == "__main__":
     main()
