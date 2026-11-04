@@ -81,10 +81,19 @@ def find_nearest(word, K, V, vectors):
     nearest = np.argsort(-similarities)[:K]
     return idx, nearest, similarities[nearest]
 
+# reduce 3D vector
+def reduce_to_3d(vectors):
+    n_components = min(3, vectors.shape[0], vectors.shape[1])
+    pca = PCA(n_components=n_components)
+    pca.fit(vectors)
+    return pca
+
+
 def main():
     word, K, V, vectors = check_input_params()
     idx, nearest, similarities = find_nearest(word, K, V, vectors)
-    print(idx, nearest, similarities)
+    pca=reduce_to_3d(vectors)
+    print(pca)
 
 
 
