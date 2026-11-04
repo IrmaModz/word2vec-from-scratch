@@ -4,11 +4,13 @@ import sys
 import os
 import re
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 EMBED_FILE = "CS585_P02A_A20597307_EMBED.TXT"
 DEFAULT_K = 5
 
-
+# load embeddings from CS585_P02A file
 def load_embeddings(embed_path):
     V = []
     vectors = []
@@ -21,7 +23,7 @@ def load_embeddings(embed_path):
             vectors.append([float(x) for x in parts[1:]])
     return V, np.array(vectors)
 
-
+# check input parameters
 def check_input_params():
     # two arguments
     if len(sys.argv) != 3:
@@ -65,9 +67,25 @@ def check_input_params():
 
     return word, K, V, vectors
 
+# find nearest vectors
+def find_nearest(word, K, V, vectors):
+    norms = np.linalg.norm(vectors, axis=1)
+    norms[norms == 0] = 1e-10
+    unit = vectors / norms[:, None]
+
+    idx = V.index(word)
+    similarities = unit @ unit[idx]
+    similarities[idx] = -np.inf
+
+    K = min(K, len(V) - 1)
+    nearest = np.argsort(-similarities)[:K]
+    return idx, nearest, similarities[nearest]
+
 def main():
     word, K, V, vectors = check_input_params()
-    print(word,K,V)
+    idx, nearest, similarities = find_nearest(word, K, V, vectors)
+    print(idx, nearest, similarities)
+
 
 
 
