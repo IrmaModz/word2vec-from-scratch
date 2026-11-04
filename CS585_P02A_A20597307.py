@@ -9,6 +9,7 @@ import numpy as np
 
 DEFAULT_D = 50
 
+# check input parameters
 def check_input_params():   
     # accept two arguments only
     if len(sys.argv)!=3:
@@ -36,5 +37,78 @@ def check_input_params():
          
     return D, corpus_path
 
+# Hyperparameters
+OUTPUT_FILE = "CS585_P02A_A20597307_EMBED.TXT"
+
+# clean file
+def clean_file(file_name):
+    # read the file (encoding that handles non-Latin characters)
+    # replace (not just delete) non-Latin-letter characters so words stay separated
+    # lowercase entire contents
+    text = None
+    return text
+
+# create tokens + vocabulary
+def create_vocabulary(text):
+    # Split the text into wordss 
+    # Create a list of unique words
+    # Sort the unique words alphabetically
+    # Give each word a number (index)
+    # Keep the original word order for training   
+    tokens = None
+    V = None
+    word_to_index = None
+    return tokens, V, word_to_index
+
+# build training data
+def build_training_pairs(tokens, word_to_index):
+    # Go through the words in their original order
+    # Select one word as the target
+    # Find nearby words using WINDOW_SIZE
+    # Create a pair for each target and nearby word
+    # Store the word indices
+    pairs = None
+    return pairs
+
+# initialize weights
+def init_weights(vocab_size, D):
+    # input (target) embedding matrix: vocab_size x D
+    # output (context) matrix: as explained in class
+    W_in = None
+    W_out = None
+    return W_in, W_out
+
+# train
+def train(pairs, W_in, W_out, vocab_size):
+    # for each epoch:
+    #   for each (target, context) pair:
+    #      Get the target word vector
+    #      Calculate scores using dot products
+    #      Convert scores into probabilities using softmax  
+    #      Compare the prediction with the correct word
+    #      Calculate loss  
+    #      Calculate gradients
+    #     update weights using LEARNING_RATE
+    return W_in, W_out
+
+# save results
+def save_embedding(V, embeddings, file_name):
+    # one line per word, in V's (alphabetical) order
+    # format: word, v1, v2, ..., vD   (space after each comma)
+    return
+
+def main():
+    D, corpus_path = check_input_params()
+    text = clean_file(corpus_path)
+    tokens, V, word_to_index = create_vocabulary(text)
+    pairs = build_training_pairs(tokens, word_to_index)
+    W_in, W_out = init_weights(len(V), D)
+    W_in, W_out = train(pairs, W_in, W_out, len(V))
+    save_embedding(V, W_in, OUTPUT_FILE)
+
+    return
+
+
 if __name__ == "__main__":
-    print(check_input_params())
+    main()
+    
