@@ -1,5 +1,5 @@
 '''
-python CS585_P02A_A20597307.py 2 CORPUS_FILE.txt
+python CS585_P02A_A20597307.py 20 CORPUS_FILE.txt
 Irma Modgvrishvili
 A20597307
 '''
@@ -12,7 +12,9 @@ import re
 OUTPUT_FILE = "CS585_P02A_A20597307_EMBED.TXT"
 WINDOW_SIZE = 2
 DEFAULT_D = 50
-
+LEARNING_RATE = 0.025
+EPOCHS = 100
+NEG_SAMPLES = 2
 
 # check input parameters
 def check_input_params():   
@@ -100,8 +102,19 @@ def init_weights(vocab_size, D):
 
     return W_in, W_out
 
+# build negative probabilies
+def build_neg_probs(tokens, word_to_index):
+    counts = np.zeros(len(word_to_index))
+    for word in tokens:
+        counts[word_to_index[word]] += 1
+    return counts / counts.sum()
+
+# calculate sigmoid
+def sigmoid(x):
+    return 1.0 / (1.0 + np.exp(-np.clip(x, -500, 500)))
+
 # train
-def train(pairs, W_in, W_out, vocab_size):
+def train(pairs, W_in, W_out, neg_probs):
     # for each epoch:
     #   for each (target, context) pair:
     #      Get the target word vector
@@ -111,6 +124,38 @@ def train(pairs, W_in, W_out, vocab_size):
     #      Calculate loss  
     #      Calculate gradients
     #     update weights using LEARNING_RATE
+
+    rng = np.random.default_rng(42)
+    pairs = np.array(pairs)
+    vocab_size = W_in.shape[0]
+
+    for epoch in range(EPOCHS):
+        order = rng.permutation(len(pairs))
+        negatives = rng.choice(vocab_size, size=(len(pairs), NEG_SAMPLES), p=neg_probs)
+        total_loss = 0.0
+
+        for n, idx in enumerate(order):
+            t_idx, c_idx = pairs[idx]
+            neg_idx = negatives[n]
+
+            t = W_in[t_idx].copy()
+            c_pos = W_out[c_idx].copy()
+            c_negs = W_out[neg_idx].copy()
+
+            score_pos = sigmoid(t @ c_pos)
+            score_negs = sigmoid(c_negs @ t)
+
+            total_loss += -(np.log(score_pos + 1e-10) + np.sum(np.log(1 - score_negs + 1e-10)))
+
+            grad_c_pos = (score_pos - 1) * t
+            grad_c_negs = score_negs[:, None] * t
+            grad_t = (score_pos - 1) * c_pos + score_negs @ c_negs
+
+            W_out[c_idx] -= LEARNING_RATE * grad_c_pos
+            np.add.at(W_out, neg_idx, -LEARNING_RATE * grad_c_negs)
+            W_in[t_idx] -= LEARNING_RATE * grad_t
+
+        print(f"Epoch {epoch + 1}/{EPOCHS}  loss: {total_loss / max(len(pairs), 1):.4f}")
     return W_in, W_out
 
 # save results
@@ -122,20 +167,11 @@ def save_embedding(V, embeddings, file_name):
 def main():
     D, corpus_path = check_input_params()
     text = clean_file(corpus_path)
-    print(text)
-    print("-----------")
-
     tokens, V, word_to_index = create_vocabulary(text)
-    print(tokens, V, word_to_index)
-    print("-----------")
-
     pairs = build_training_pairs(tokens, word_to_index)
-    print(pairs)
-
+    neg_probs = build_neg_probs(tokens, word_to_index)
     W_in, W_out = init_weights(len(V), D)
-    print("-----------")
-    print(W_in, W_out)
-    #W_in, W_out = train(pairs, W_in, W_out, len(V))
+    W_in, W_out = train(pairs, W_in, W_out, neg_probs)
     #save_embedding(V, W_in, OUTPUT_FILE)
 
     return
