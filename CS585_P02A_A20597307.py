@@ -1,6 +1,6 @@
 '''
 python CS585_P02A_A20597307.py 20 CORPUS_FILE.txt
-Irma Modgvrishvili
+Irma Modzgvrishvili
 A20597307
 '''
 import sys
@@ -14,7 +14,7 @@ OUTPUT_FILE = "CS585_P02A_A20597307_EMBED.TXT"
 WINDOW_SIZE = 2
 DEFAULT_D = 50
 LEARNING_RATE = 0.025
-EPOCHS = 100
+EPOCHS = 5
 NEG_SAMPLES = 2
 
 # check input parameters
@@ -120,7 +120,7 @@ def train(pairs, W_in, W_out, neg_probs):
     #   for each (target, context) pair:
     #      Get the target word vector
     #      Calculate scores using dot products
-    #      Convert scores into probabilities using softmax  
+    #      Convert scores into probabilities using skip-gram with negative sampling 
     #      Compare the prediction with the correct word
     #      Calculate loss  
     #      Calculate gradients
