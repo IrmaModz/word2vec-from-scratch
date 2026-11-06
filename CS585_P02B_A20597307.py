@@ -1,5 +1,3 @@
-# python CS585_P02B_A20597307.py alone 10
-
 import sys
 import os
 import re
