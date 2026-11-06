@@ -1,8 +1,3 @@
-'''
-python CS585_P02A_A20597307.py 20 CORPUS_FILE.txt
-Irma Modzgvrishvili
-A20597307
-'''
 import sys
 import os
 import numpy as np
