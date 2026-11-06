@@ -116,15 +116,10 @@ def sigmoid(x):
 
 # train
 def train(pairs, W_in, W_out, neg_probs):
-    # for each epoch:
-    #   for each (target, context) pair:
-    #      Get the target word vector
-    #      Calculate scores using dot products
-    #      Convert scores into probabilities using skip-gram with negative sampling 
-    #      Compare the prediction with the correct word
-    #      Calculate loss  
-    #      Calculate gradients
-    #     update weights using LEARNING_RATE
+    # Calculate dot products for positive and negative samples
+    # Apply sigmoid to calculate probabilities
+    # Calculate negative sampling loss
+    # Update input and output weights using gradient descent
 
     rng = np.random.default_rng(42)
     pairs = np.array(pairs)
@@ -133,7 +128,6 @@ def train(pairs, W_in, W_out, neg_probs):
     for epoch in range(EPOCHS):
         order = rng.permutation(len(pairs))
         negatives = rng.choice(vocab_size, size=(len(pairs), NEG_SAMPLES), p=neg_probs)
-        total_loss = 0.0
 
         for n, idx in enumerate(order):
             t_idx, c_idx = pairs[idx]
@@ -145,8 +139,6 @@ def train(pairs, W_in, W_out, neg_probs):
 
             score_pos = sigmoid(t @ c_pos)
             score_negs = sigmoid(c_negs @ t)
-
-            total_loss += -(np.log(score_pos + 1e-10) + np.sum(np.log(1 - score_negs + 1e-10)))
 
             grad_c_pos = (score_pos - 1) * t
             grad_c_negs = score_negs[:, None] * t
@@ -181,6 +173,9 @@ def main():
 
     text = clean_file(corpus_path)
     tokens, V, word_to_index = create_vocabulary(text)
+    if not tokens:
+            print("ERROR: Corpus contains no valid Latin-alphabet words.")
+            sys.exit(1)
     pairs = build_training_pairs(tokens, word_to_index)
     neg_probs = build_neg_probs(tokens, word_to_index)
 
