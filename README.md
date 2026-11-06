@@ -63,6 +63,12 @@ It compares embedding dimensions 50, 100, and 200, as well as changes to learnin
 - `D_<word>.png` compares the embedding dimensions.
 - `GD_<word>.png` compares gradient-descent and context-window settings.
 
+### Example: Dimensionality Comparison
+
+This figure compares the eight nearest neighbors of `she` for embedding dimensions 50, 100, and 200. Neighbors are selected by cosine similarity; PCA projects the vectors to three dimensions for visualization.
+
+![PCA visualization of the nearest neighbors of she across three embedding dimensions](experiments/D_she.png)
+
 ## Project Files
 
 - `CS585_P02A_A20597307.py`: preprocessing, vocabulary construction, skip-gram training, and embedding output.
